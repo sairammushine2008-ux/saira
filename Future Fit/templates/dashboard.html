@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Athlete Dashboard - FutureFit AI{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<div class="hero-banner">
+  <div class="hero-content">
+    <div class="hero-text">
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+        <span class="badge badge-ai-verified">✓ Verified AI Candidate</span>
+        <span class="badge badge-cyan">{{ athlete.district }} District • {{ athlete.sport }}</span>
+      </div>
+      <h1>Ready to test your limits today?</h1>
+      <p>
+        Welcome back, <strong>{{ athlete.name }}</strong>! Your Left Ankle (#27) vertical trajectory recorded an impressive 
+        <span style="color: var(--accent-cyan); font-weight: 700;">{{ athlete.peak_jump_cm }} cm</span> peak leap. Khelo India district trials are approaching in 16 days.
+      </p>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" id="quick-launch-assessment-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span>Start AI Jump Assessment</span>
+      </button>
+      <button class="btn btn-secondary btn-lg" id="refresh-stats-btn" title="Refresh Live Biometrics">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Sync Telemetry</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic Stats Row -->
+<div class="stats-grid">
+  <!-- Stat 1: Peak Vertical Jump -->
+  <div class="glass-card stat-card">
+    <div class="stat-icon cyan">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Peak Vertical Jump</span>
+      <span class="stat-value" id="peak-jump-display">{{ athlete.peak_jump_cm }} cm</span>
+      <span class="stat-sub">▲ +3.8cm this month</span>
+    </div>
+  </div>
+
+  <!-- Stat 2: Total Sessions -->
+  <div class="glass-card stat-card">
+    <div class="stat-icon lime">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Total Jump Sessions</span>
+      <span class="stat-value" id="total-sessions-display">{{ athlete.total_sessions }}</span>
+      <span class="stat-sub">Verified on Camera</span>
+    </div>
+  </div>
+
+  <!-- Stat 3: Calories Burned -->
+  <div class="glass-card stat-card">
+    <div class="stat-icon amber">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Calories Burned</span>
+      <span class="stat-value" id="calories-display">{{ "{:,}".format(athlete.calories_burned) }} kcal</span>
+      <span class="stat-sub">Kinetic Power Output</span>
+    </div>
+  </div>
+
+  <!-- Stat 4: Training Streak -->
+  <div class="glass-card stat-card">
+    <div class="stat-icon purple">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Training Streak</span>
+      <span class="stat-value" id="streak-display">{{ athlete.streak_days }} Days</span>
+      <span class="stat-sub">Unstoppable Discipline</span>
+    </div>
+  </div>
+
+  <!-- Stat 5: National Rank -->
+  <div class="glass-card stat-card">
+    <div class="stat-icon rose">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">National Rank</span>
+      <span class="stat-value" id="rank-display">#{{ athlete.national_rank }}</span>
+      <span class="stat-sub">Top 2% All-India</span>
+    </div>
+  </div>
+</div>
+
+<!-- Charts & Performance Radar Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+  <!-- Weekly Vertical Jump Progression (Chart.js) -->
+  <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">Weekly Vertical Jump Progression</h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem;">Left Ankle (#27) vertical displacement telemetry across testing sessions.</p>
+      </div>
+      <div style="display: flex; gap: 0.35rem; background: rgba(0, 0, 0, 0.25); padding: 4px; border-radius: var(--radius-sm);">
+        <button class="btn btn-sm btn-secondary chart-filter-btn active" data-period="7d">Last 7 Days</button>
+        <button class="btn btn-sm btn-secondary chart-filter-btn" data-period="30d">Last 30 Days</button>
+        <button class="btn btn-sm btn-secondary chart-filter-btn" data-period="all">All-Time</button>
+      </div>
+    </div>
+
+    <div style="height: 300px; position: relative; width: 100%;">
+      <canvas id="weekly-jump-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Athletic Competency Radar (Chart.js) -->
+  <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="margin-bottom: 1rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700;">Athletic Biometric Radar</h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem;">6-Axis SAI Combine Evaluation</p>
+    </div>
+
+    <div style="height: 300px; position: relative; width: 100%;">
+      <canvas id="athletic-radar-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Assessments Table & Talent Combine Highlights -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+  <!-- Recent Jump Assessment Logs -->
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.2rem; font-weight: 700;">Recent AI Jump Assessments</h3>
+      <a href="/tracker" class="btn btn-sm btn-outline-cyan">New Assessment +</a>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted);">
+            <th style="padding: 0.75rem;">Date</th>
+            <th style="padding: 0.75rem;">Jump Height</th>
+            <th style="padding: 0.75rem;">Hang Time</th>
+            <th style="padding: 0.75rem;">Landmark Track</th>
+            <th style="padding: 0.75rem;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem; font-weight: 600;">Today, 18:40</td>
+            <td style="padding: 0.75rem; color: var(--accent-cyan); font-weight: 800; font-family: var(--font-mono);">68.5 cm</td>
+            <td style="padding: 0.75rem; font-family: var(--font-mono);">747 ms</td>
+            <td style="padding: 0.75rem;"><span class="badge badge-purple">Left Ankle #27</span></td>
+            <td style="padding: 0.75rem;"><span class="badge badge-ai-verified">✓ Verified AI</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem; font-weight: 600;">Sep 24, 19:15</td>
+            <td style="padding: 0.75rem; color: var(--accent-cyan); font-weight: 800; font-family: var(--font-mono);">67.3 cm</td>
+            <td style="padding: 0.75rem; font-family: var(--font-mono);">741 ms</td>
+            <td style="padding: 0.75rem;"><span class="badge badge-purple">Left Ankle #27</span></td>
+            <td style="padding: 0.75rem;"><span class="badge badge-ai-verified">✓ Verified AI</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem; font-weight: 600;">Sep 23, 17:30</td>
+            <td style="padding: 0.75rem; color: var(--accent-cyan); font-weight: 800; font-family: var(--font-mono);">66.1 cm</td>
+            <td style="padding: 0.75rem; font-family: var(--font-mono);">734 ms</td>
+            <td style="padding: 0.75rem;"><span class="badge badge-purple">Left Ankle #27</span></td>
+            <td style="padding: 0.75rem;"><span class="badge badge-ai-verified">✓ Verified AI</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Khelo India District Combine Pass Card -->
+  <div class="glass-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.9)); border-color: rgba(16, 185, 129, 0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+      <span class="badge badge-scout">Upcoming Scouting Camp</span>
+      <span style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 700;">16 Days Left</span>
+    </div>
+
+    <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">Khelo India District Talent Trials</h4>
+    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+      Shivaji Sports Stadium, Station Road, Dhule. Your AI verified 68.5cm jump grants priority scout review.
+    </p>
+
+    <div style="background: rgba(0, 0, 0, 0.3); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 1rem;">
+      <div>Admit Pass: <strong style="color: var(--accent-cyan); font-family: var(--font-mono);">SAI-DHU-2026-8842</strong></div>
+      <div>Reporting: <strong>Batch A (08:30 AM IST)</strong></div>
+    </div>
+
+    <a href="/events" class="btn btn-lime" style="width: 100%;">
+      <span>View Trial Pass & QR Badge</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

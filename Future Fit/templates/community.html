@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Athlete Community & Social Feed - FutureFit{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Main Social Feed -->
+  <div>
+    <!-- Feed Header & Create Post Card -->
+    <div class="glass-card" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <img src="{{ athlete.avatar }}" alt="{{ athlete.name }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan);" />
+        <button id="open-create-post-modal-btn" style="flex: 1; text-align: left; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); border-radius: var(--radius-full); padding: 0.75rem 1.25rem; color: var(--text-muted); font-size: 0.92rem; cursor: pointer; transition: var(--transition-smooth);">
+          Share your latest AI jump assessment, training breakthrough, or trial update...
+        </button>
+      </div>
+    </div>
+
+    <!-- Posts Stream -->
+    <div id="community-feed-container">
+      <!-- Rendered dynamically by community.js with working Likes, Comments, Shares, Follows, and Scout Endorsements -->
+    </div>
+  </div>
+
+  <!-- Sidebar: Scouting Spotlight & Records -->
+  <div>
+    <!-- Scouting Spotlight Card -->
+    <div class="glass-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(15, 23, 42, 0.9)); border-color: rgba(245, 158, 11, 0.3);">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <span class="badge badge-scout">Official Talent Scout Notice</span>
+      </div>
+      <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">SAI Regional Combine Notice</h4>
+      <p style="color: var(--text-secondary); font-size: 0.86rem; line-height: 1.5; margin-bottom: 1rem;">
+        Scouts from the Western High-Performance Division are actively monitoring community posts featuring verified Left Ankle (#27) vertical jumps over 65 cm.
+      </p>
+      <a href="/tracker" class="btn btn-sm btn-outline-cyan" style="width: 100%;">
+        Record Verified Jump Assessment
+      </a>
+    </div>
+
+    <!-- Trending District Records -->
+    <div class="glass-card">
+      <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+        Trending District Vertical Records
+      </h4>
+
+      <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem;">Karan Chavan</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Pune • Basketball</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-cyan);">74.8 cm</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem;">Siddharth More</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Dhule • Athletics</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-lime);">68.5 cm</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem;">Ananya Salunkhe</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Nashik • Volleyball</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-amber);">64.2 cm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal-backdrop" id="create-post-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-cyan">New Community Post</span>
+        <h3 class="modal-title">Share Athletic Progress</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('create-post-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <img src="{{ athlete.avatar }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+        <div>
+          <div style="font-weight: 700; font-size: 0.95rem;">{{ athlete.name }}</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">{{ athlete.district }} District • {{ athlete.sport }}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="new-post-content">Workout Log / Biometric Notes</label>
+        <textarea id="new-post-content" class="input-field" rows="4" placeholder="Describe your workout, vertical jump apex, or training milestone..." style="padding-left: 1rem; resize: vertical;"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="new-post-badge-select">Attest Verified Biometric Badge</label>
+        <select id="new-post-badge-select" class="input-field" style="padding-left: 1rem;">
+          <option value="Vertical Jump: 68.5 cm • Dhule Record" selected>Vertical Jump: 68.5 cm • Dhule Record</option>
+          <option value="Vertical Jump: 65.0+ cm • Verified AI Candidate">Vertical Jump: 65.0+ cm • Verified AI Candidate</option>
+          <option value="Training Streak: 14 Consecutive Days">Training Streak: 14 Consecutive Days</option>
+          <option value="Khelo India District Trial Pass Confirmed">Khelo India District Trial Pass Confirmed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('create-post-modal')">Cancel</button>
+      <button type="button" class="btn btn-primary" id="publish-post-btn">
+        <span>Publish Update</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/community.js') }}"></script>
+{% endblock %}

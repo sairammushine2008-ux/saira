@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}AI Pose Tracking & Camera Engine - FutureFit{% endblock %}
+
+{% block content %}
+<div class="tracker-container">
+  <!-- Tracker Header & Actions -->
+  <div class="tracker-header">
+    <div class="tracker-title-box">
+      <h2>
+        <svg width="28" height="28" fill="none" stroke="var(--accent-cyan)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        AI Pose Tracking & Biomechanics Engine
+      </h2>
+      <p>Tracking Left Ankle Landmark (#27) vertical Y-displacement to compute certified vertical jump metrics.</p>
+    </div>
+
+    <div class="tracker-controls-bar">
+      <!-- Session Start & End Controls -->
+      <button class="btn btn-session-start" id="start-session-btn" title="Start Athletic Pose Assessment Session">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        <span>Start Session</span>
+      </button>
+
+      <button class="btn btn-session-end" id="end-session-btn" style="display: none;" title="End Active Assessment Session">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        <span>End Session</span>
+      </button>
+
+      <button class="btn btn-secondary" id="calibrate-btn" title="Calibrate Standing Ground Baseline">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        <span>Calibrate Baseline</span>
+      </button>
+
+      <button class="btn btn-secondary" id="toggle-sim-btn" title="Toggle Synthetic Jump Simulation">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Simulate Athletic Jump</span>
+      </button>
+
+      <button class="btn btn-primary" id="submit-assessment-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>Submit Assessment to Talent Database</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Live Telemetry Bar -->
+  <div class="telemetry-bar">
+    <div class="telemetry-item">
+      <span class="telemetry-label">Session Status:</span>
+      <div id="session-status-badge" class="status-badge" style="background: rgba(148, 163, 184, 0.15); border-color: rgba(148, 163, 184, 0.3); color: var(--text-secondary);">
+        <span class="status-pulse-dot" style="background: #94a3b8; box-shadow: none;"></span>
+        <span id="session-status-text">Session Standby</span>
+      </div>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Session Time:</span>
+      <span class="telemetry-val" id="session-timer" style="color: var(--accent-lime);">00:00</span>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Jumps Executed:</span>
+      <span class="telemetry-val" id="session-jump-count" style="color: #00f0ff;">0</span>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Tracked Target:</span>
+      <span class="telemetry-val" style="color: #f59e0b;">Left Ankle (#27)</span>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Ankle Y Level:</span>
+      <span class="telemetry-val" id="telemetry-ankle-y">Y: 0.820 (Δ +0.0 cm)</span>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Latency / FPS:</span>
+      <span class="telemetry-val" id="telemetry-latency">15 ms (60 FPS)</span>
+    </div>
+
+    <div class="telemetry-item">
+      <span class="telemetry-label">Engine:</span>
+      <div id="telemetry-status" class="status-badge">
+        <span class="status-pulse-dot"></span>
+        <span>Standby Mode</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side-by-Side Dual Viewport -->
+  <div class="viewports-grid" style="position: relative;">
+    <!-- Standby Viewport Overlay -->
+    <div id="standby-overlay" class="standby-overlay">
+      <div class="standby-icon-box">
+        <svg width="34" height="34" fill="none" stroke="var(--accent-cyan)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><circle cx="12" cy="12" r="9" stroke="var(--accent-cyan)" stroke-width="2"/></svg>
+      </div>
+      <h3>Ready For Athletic Jump Assessment</h3>
+      <p>Initiate a certified session to start biometric landmark tracking on Left Ankle (#27) and compute vertical leap apex.</p>
+      
+      <div class="standby-guidelines">
+        <div class="standby-step">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>Step 2-3 meters back</span>
+        </div>
+        <div class="standby-step">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>Ensure head to feet in frame</span>
+        </div>
+        <div class="standby-step">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>Perform explosive leap</span>
+        </div>
+      </div>
+
+      <button class="btn btn-session-start" id="overlay-start-session-btn" style="padding: 0.75rem 1.75rem; font-size: 1rem;">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        <span>Start Assessment Session</span>
+      </button>
+    </div>
+
+    <!-- Left Viewport: Live Raw Webcam Feed -->
+    <div class="viewport-panel" id="raw-camera-viewport">
+      <div class="viewport-panel-header">
+        <div class="panel-tag">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span>RAW WEBCAM FEED</span>
+        </div>
+        <div class="live-rec-indicator" id="live-rec-indicator" style="display: none;">
+          <span class="rec-dot"></span>
+          <span>LIVE RECORDING</span>
+        </div>
+      </div>
+
+      <div class="video-wrapper">
+        <video id="webcam-video" autoplay playsinline muted></video>
+      </div>
+    </div>
+
+    <!-- Right Viewport: Processed AI Landmark Stream -->
+    <div class="viewport-panel" id="ai-processed-viewport">
+      <div class="viewport-panel-header">
+        <div class="panel-tag" style="border-color: rgba(0, 240, 255, 0.4); color: var(--accent-cyan);">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>AI SKELETAL STREAM (33 LANDMARKS)</span>
+        </div>
+        <div class="panel-tag" style="color: var(--accent-lime);">
+          <span>GPU ACCELERATED</span>
+        </div>
+      </div>
+
+      <!-- Apex Jump Callout -->
+      <div id="hud-apex-badge" class="hud-apex-badge">
+        🚀 APEX: 68.5 CM
+      </div>
+
+      <!-- Jump Height Meter HUD -->
+      <div class="hud-jump-meter">
+        <div class="jump-meter-ticks">
+          <span>80</span>
+          <span>60</span>
+          <span>40</span>
+          <span>20</span>
+          <span>0</span>
+        </div>
+        <div class="jump-meter-fill" id="jump-meter-fill"></div>
+        <div class="jump-meter-label" id="jump-meter-label">0.0 cm</div>
+      </div>
+
+      <!-- Landmark Legend -->
+      <div class="landmark-legend">
+        <div class="legend-item">
+          <div class="legend-color-dot" style="background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></div>
+          <span>Ankle #27 (Target)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color-dot" style="background: #00f0ff;"></div>
+          <span>Torso & Core</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color-dot" style="background: #10b981;"></div>
+          <span>Lower Limbs</span>
+        </div>
+      </div>
+
+      <div class="video-wrapper">
+        <canvas id="pose-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Live Summary Row -->
+  <div class="jump-summary-bar">
+    <div class="jump-summary-card">
+      <div class="lbl">Current Vertical Height</div>
+      <div class="val" id="summary-current-jump">0.0 cm</div>
+    </div>
+    <div class="jump-summary-card">
+      <div class="lbl">Session Peak Jump</div>
+      <div class="val" id="summary-peak-jump" style="color: var(--accent-lime);">0.0 cm</div>
+    </div>
+    <div class="jump-summary-card">
+      <div class="lbl">Session Jumps Count</div>
+      <div class="val" id="summary-total-jumps" style="color: var(--accent-cyan);">0</div>
+    </div>
+    <div class="jump-summary-card">
+      <div class="lbl">Jump Hang Time</div>
+      <div class="val" id="summary-hang-time" style="color: var(--accent-amber);">0 ms</div>
+    </div>
+    <div class="jump-summary-card">
+      <div class="lbl">Takeoff Velocity</div>
+      <div class="val" id="summary-velocity" style="color: var(--accent-purple);">0.0 m/s</div>
+    </div>
+  </div>
+
+  <!-- On-Screen Collapsible Debug Console -->
+  <div class="debug-console-container">
+    <div class="debug-console-header">
+      <div class="debug-title">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>BIOMETRIC TELEMETRY & SOCKET DEBUG TERMINAL</span>
+      </div>
+      <div class="debug-actions">
+        <button class="btn btn-sm btn-secondary" id="clear-debug-btn" style="padding: 2px 8px; font-size: 0.75rem;">Clear</button>
+        <button class="btn btn-sm btn-secondary" id="copy-debug-btn" style="padding: 2px 8px; font-size: 0.75rem;">Copy Log</button>
+        <button class="btn btn-sm btn-secondary" id="debug-toggle-btn" style="padding: 2px 8px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="debug-terminal-body" id="debug-terminal">
+      <!-- Live log lines stream dynamically here -->
+    </div>
+  </div>
+</div>
+
+<!-- Session Summary Modal -->
+<div id="session-summary-modal" class="session-modal-backdrop">
+  <div class="session-modal-card">
+    <div class="session-modal-header">
+      <h3>
+        <svg width="22" height="22" fill="none" stroke="var(--accent-lime)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Assessment Session Complete</span>
+      </h3>
+      <button id="modal-close-btn" class="session-modal-close-btn" title="Close">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="session-modal-body">
+      <div class="session-hero-stat">
+        <div>
+          <div class="session-hero-label">Certified Peak Vertical Jump</div>
+          <div class="session-hero-val" id="modal-peak-val">0.0 cm</div>
+        </div>
+        <div id="modal-tier-badge" class="session-badge-tier">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="modal-tier-text">National Talent Prospect</span>
+        </div>
+      </div>
+
+      <div class="session-metrics-grid">
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Total Jumps</div>
+          <div class="session-mini-val" id="modal-total-jumps">0</div>
+        </div>
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Average Jump</div>
+          <div class="session-mini-val" id="modal-avg-jump" style="color: var(--accent-cyan);">0.0 cm</div>
+        </div>
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Session Duration</div>
+          <div class="session-mini-val" id="modal-duration">00:00</div>
+        </div>
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Max Hang Time</div>
+          <div class="session-mini-val" id="modal-hang-time" style="color: var(--accent-amber);">0 ms</div>
+        </div>
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Takeoff Velocity</div>
+          <div class="session-mini-val" id="modal-velocity" style="color: var(--accent-purple);">0.0 m/s</div>
+        </div>
+        <div class="session-mini-stat">
+          <div class="session-mini-lbl">Explosive Power</div>
+          <div class="session-mini-val" id="modal-power" style="color: #10b981;">0 W</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="session-modal-footer">
+      <button class="btn btn-secondary" id="modal-restart-session-btn">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Start New Session</span>
+      </button>
+
+      <button class="btn btn-primary" id="modal-submit-assessment-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>Submit Assessment to Talent Database</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/pose-engine.js') }}"></script>
+{% endblock %}

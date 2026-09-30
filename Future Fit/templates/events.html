@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Events & Scouting Camps - FutureFit{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem;">
+        <svg width="28" height="28" fill="none" stroke="var(--accent-cyan)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        District Scouting Trials & Camps
+      </h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Official Khelo India and Sports Authority of India (SAI) talent identification combines.
+      </p>
+    </div>
+
+    <!-- View Mode Switcher -->
+    <div style="display: flex; gap: 0.5rem;">
+      <button class="btn btn-sm btn-primary active" id="view-toggle-list">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        <span>List View</span>
+      </button>
+      <button class="btn btn-sm btn-secondary" id="view-toggle-map">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        <span>Interactive Map</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="glass-card" style="padding: 1.25rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+      <div>
+        <label class="form-label" for="event-filter-district">Filter by District</label>
+        <select id="event-filter-district" class="input-field" style="padding-left: 1rem;">
+          <option value="All">All Districts</option>
+          <option value="Dhule">Dhule</option>
+          <option value="Nashik">Nashik</option>
+          <option value="Pune">Pune</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Mumbai">Mumbai</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label" for="event-filter-sport">Sport Category</label>
+        <select id="event-filter-sport" class="input-field" style="padding-left: 1rem;">
+          <option value="All">All Sports</option>
+          <option value="Athletics">Athletics</option>
+          <option value="Basketball">Basketball</option>
+          <option value="Volleyball">Volleyball</option>
+          <option value="Kabaddi">Kabaddi</option>
+          <option value="Badminton">Badminton</option>
+          <option value="Football">Football</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label" for="event-filter-status">Registration Status</label>
+        <select id="event-filter-status" class="input-field" style="padding-left: 1rem;">
+          <option value="All">All Statuses</option>
+          <option value="Registration Open">Registration Open</option>
+          <option value="Fast Filling">Fast Filling</option>
+          <option value="Upcoming">Upcoming</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Registered Passes Section -->
+  <div class="glass-card">
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+      <span class="badge badge-ai-verified">My Confirmed Trial Registrations</span>
+    </div>
+    <div id="my-registrations-container">
+      <!-- Injected dynamically via events.js -->
+    </div>
+  </div>
+
+  <!-- View 1: List View Container -->
+  <div id="events-list-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;">
+    <!-- Injected dynamically via events.js -->
+  </div>
+
+  <!-- View 2: Interactive Map View Container (Leaflet) -->
+  <div id="events-map-view" style="display: none;">
+    <div class="glass-card" style="padding: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h4 style="font-weight: 700;">Geo-Located District Scouting Combines (SAI Western & North Zone)</h4>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Click any marker to inspect trials</span>
+      </div>
+      <div id="leaflet-map-canvas" style="height: 520px; width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Event Registration Modal -->
+<div class="modal-backdrop" id="event-reg-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-cyan">Talent Combine</span>
+        <h3 class="modal-title">Trial Registration</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('event-reg-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <h3 id="reg-modal-title" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem;">Event Title</h3>
+      <div style="background: rgba(0, 0, 0, 0.25); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        <div>📍 <strong>Venue:</strong> <span id="reg-modal-venue">Shivaji Stadium, Dhule</span></div>
+        <div>📅 <strong>Dates:</strong> <span id="reg-modal-date">Oct 12-14, 2026</span></div>
+        <div>👤 <strong>Athlete:</strong> {{ athlete.name }} (Verified AI Candidate)</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg-category-select">Select Biometric Trial Discipline</label>
+        <select id="reg-category-select" class="input-field" style="padding-left: 1rem;">
+          <option value="Athletics Sprint & Jump Combine">Athletics Sprint & Jump Combine</option>
+          <option value="Kabaddi Agility Combine">Kabaddi Agility Combine</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Preferred Reporting Batch</label>
+        <select class="input-field" style="padding-left: 1rem;">
+          <option value="Morning Batch A (08:30 AM IST)">Morning Batch A (08:30 AM IST) - Priority Scouting</option>
+          <option value="Afternoon Batch B (02:00 PM IST)">Afternoon Batch B (02:00 PM IST)</option>
+        </select>
+      </div>
+
+      <div style="font-size: 0.82rem; color: var(--text-muted);">
+        By confirming, your AI verified jump records will be directly synchronized with the district talent scout panel.
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('event-reg-modal')">Cancel</button>
+      <button type="button" class="btn btn-primary" id="reg-confirm-btn">
+        <span>Confirm & Generate Admit Pass</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Official Scouting Admit Pass Modal -->
+<div class="modal-backdrop" id="admit-pass-modal">
+  <div class="modal-container" style="max-width: 550px;">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-ai-verified">Official Scouting Admit Pass</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('admit-pass-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body" style="padding: 1.5rem;">
+      <!-- Stylized Athletic Pass Card -->
+      <div style="border: 2px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 1.5rem; background: linear-gradient(135deg, rgba(9, 13, 22, 0.95), rgba(15, 23, 42, 0.95)); box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 800; letter-spacing: 0.05em;">
+              SPORTS AUTHORITY OF INDIA • KHELO INDIA COMBINE
+            </div>
+            <h3 id="pass-event-title" style="font-size: 1.2rem; font-weight: 800; margin-top: 4px;">Khelo India District Talent Trials 2026</h3>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.7rem; color: var(--text-muted);">ADMIT PASS ID</div>
+            <div id="pass-reg-id" style="font-family: var(--font-mono); font-weight: 800; font-size: 1rem; color: var(--accent-lime);">SAI-DHU-2026-8842</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.88rem;">
+            <div>Candidate: <strong id="pass-athlete-name" style="color: var(--text-primary);">{{ athlete.name if athlete else 'Registered Candidate' }}</strong></div>
+            <div>District: <strong id="pass-district">Dhule District Trials</strong></div>
+            <div>Venue: <strong id="pass-venue">Shivaji Sports Stadium</strong></div>
+            <div>Date: <strong id="pass-date">Oct 12-14, 2026</strong></div>
+            <div>Reporting Slot: <strong id="pass-slot" style="color: var(--accent-amber);">Batch A (08:30 AM IST)</strong></div>
+          </div>
+
+          <!-- Stylized QR Code Graphic -->
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 8px; border-radius: 6px;">
+            <svg width="90" height="90" viewBox="0 0 100 100" fill="#000">
+              <path d="M0 0h30v30H0zM5 5h20v20H5zM10 10h10v10H10zM70 0h30v30H70zM75 5h20v20H75zM80 10h10v10H80zM0 70h30v30H0zM5 75h20v20H5zM10 80h10v10H10zM40 10h10v10H40zM55 10h10v10H55zM35 35h15v15H35zM60 40h20v10H60zM40 60h10v20H40zM60 65h10v15H60zM80 60h15v10H80zM75 80h15v15H75z"/>
+            </svg>
+            <div id="pass-qr-token" style="font-size: 0.55rem; color: #475569; font-family: var(--font-mono); margin-top: 4px; text-align: center;">SAI-DHU-VERIFIED</div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px dashed var(--border-color); padding-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+          <span>✓ Biometric Pose Verification Attested</span>
+          <span>Status: CONFIRMED</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('admit-pass-modal')">Close</button>
+      <button type="button" class="btn btn-primary" id="print-pass-btn">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        <span>Print / Download Admit Card</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/events.js') }}"></script>
+{% endblock %}

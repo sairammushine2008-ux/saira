@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}AI Sports Coach & Training - FutureFit{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 2rem;">
+  <!-- Section Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem;">
+        <svg width="28" height="28" fill="none" stroke="var(--accent-lime)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        AI Sports Coach & Training Engine
+      </h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Personalized biometric training protocols targeting vertical jump velocity, tendon stiffness, and reactive agility.
+      </p>
+    </div>
+  </div>
+
+  <!-- Dynamic Questionnaire Form Card -->
+  <div class="glass-card">
+    <div style="margin-bottom: 1.25rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-cyan);">Athletic Assessment Questionnaire</h3>
+      <p style="font-size: 0.88rem; color: var(--text-secondary);">
+        Configure your sport profile to generate a customized 7-day periodized training schedule.
+      </p>
+    </div>
+
+    <form id="coach-questionnaire-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; align-items: flex-end;">
+      <!-- Sport Select -->
+      <div>
+        <label class="form-label" for="coach-sport-select">Primary Sport</label>
+        <select id="coach-sport-select" class="input-field" style="padding-left: 1rem;">
+          <option value="Athletics" selected>Athletics / Track & Field</option>
+          <option value="Basketball">Basketball</option>
+          <option value="Volleyball">Volleyball</option>
+          <option value="Kabaddi">Kabaddi</option>
+          <option value="Badminton">Badminton</option>
+          <option value="Football">Football / Soccer</option>
+          <option value="Cricket">Cricket (Fast Bowlers & Fielders)</option>
+        </select>
+      </div>
+
+      <!-- Age Select -->
+      <div>
+        <label class="form-label" for="coach-age-select">Age Group</label>
+        <select id="coach-age-select" class="input-field" style="padding-left: 1rem;">
+          <option value="14-17">14 - 17 yrs (Junior National)</option>
+          <option value="18-22" selected>18 - 22 yrs (Senior College / Pro)</option>
+          <option value="23-28">23 - 28 yrs (Elite Athlete)</option>
+          <option value="29+">29+ yrs (Masters Athletic)</option>
+        </select>
+      </div>
+
+      <!-- Target Goal Select -->
+      <div>
+        <label class="form-label" for="coach-goal-select">Target Objective</label>
+        <select id="coach-goal-select" class="input-field" style="padding-left: 1rem;">
+          <option value="Increase Vertical Jump +10cm" selected>Increase Vertical Jump (+10 cm)</option>
+          <option value="Explosive First-Step Agility">Explosive First-Step Agility</option>
+          <option value="Anaerobic Stamina & Power">Anaerobic Stamina & Power</option>
+          <option value="Ankle Stiffness & Injury Shield">Ankle Stiffness & Injury Shield</option>
+        </select>
+      </div>
+
+      <!-- Daily Time Select -->
+      <div>
+        <label class="form-label" for="coach-time-select">Daily Available Time</label>
+        <select id="coach-time-select" class="input-field" style="padding-left: 1rem;">
+          <option value="15 mins">15 Minutes (Express Booster)</option>
+          <option value="30 mins">30 Minutes (Core Power)</option>
+          <option value="45 mins" selected>45 Minutes (Full Protocol)</option>
+          <option value="60 mins">60 Minutes (Elite Combine Preparation)</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div>
+        <button type="submit" class="btn btn-primary" id="generate-plan-btn" style="width: 100%; height: 44px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Generate Custom AI Schedule</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Weekly Workout Plan Schedule Container -->
+  <div id="workout-plan-container">
+    <!-- Day Tabs Navigation -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="day-tabs-container">
+        <!-- Rendered dynamically via coach.js: Day 1 - Day 7 -->
+      </div>
+    </div>
+
+    <!-- Active Day Header -->
+    <div class="glass-card" style="margin-bottom: 1.25rem; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.7)); border-left: 4px solid var(--accent-cyan);">
+      <h3 id="active-day-title" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.35rem;">
+        Day 1: Explosive Rate of Force Development
+      </h3>
+      <p id="active-day-focus" style="color: var(--accent-cyan); font-size: 0.92rem; font-weight: 600;">
+        Target Focus: Maximal Vertical Output & Elastic Recoil
+      </p>
+    </div>
+
+    <!-- Active Day Exercises List -->
+    <div id="active-day-exercises">
+      <!-- Exercise cards rendered dynamically by coach.js with functional timers & video demo -->
+    </div>
+  </div>
+</div>
+
+<!-- Video Demonstration Modal -->
+<div class="modal-backdrop" id="video-demo-modal">
+  <div class="modal-container" style="max-width: 720px;">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-cyan">AI Movement Demonstration</span>
+        <h3 class="modal-title" id="video-modal-title">Depth Jumps to Max Vertical</h3>
+      </div>
+      <button class="modal-close-btn" id="close-video-modal-btn">&times;</button>
+    </div>
+
+    <div class="modal-body" style="padding: 1.25rem;">
+      <!-- Embedded Responsive Video Player -->
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: var(--radius-sm); margin-bottom: 1.25rem; background: #000;">
+        <iframe id="video-modal-iframe" style="position: absolute; top:0; left: 0; width: 100%; height: 100%; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+        <div>
+          <strong style="color: var(--accent-lime);">Primary Biomechanical Target:</strong>
+          <span id="video-modal-target" style="color: var(--text-secondary);">Reactive Plyometrics & Achilles Elasticity</span>
+        </div>
+        <div>
+          <strong style="color: var(--accent-cyan);">Key Coaching Cues:</strong>
+          <span id="video-modal-focus" style="color: var(--text-secondary);">Minimize ground contact time under 0.20s; explosive arm swing.</span>
+        </div>
+        <div style="background: rgba(0, 0, 0, 0.25); padding: 0.75rem; border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.82rem; margin-top: 0.5rem;">
+          💡 <strong>Pose Tracker Tip:</strong> Position webcam at waist-height 3 meters away so Left Ankle #27 and Head #0 remain fully in frame during both takeoff and apex.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('video-demo-modal')">Close Video</button>
+      <a href="/tracker" class="btn btn-primary">
+        <span>Test Exercise on Camera Engine</span>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/coach.js') }}"></script>
+{% endblock %}

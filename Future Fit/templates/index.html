@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}FutureFit - AI Sports Pose Tracker & 3D Interactive Platform{% endblock %}
+
+{% block extra_head %}
+<style>
+  .auth-hero-section {
+    position: relative;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+  }
+
+  #three-hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .auth-left-col {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+  }
+
+  .auth-card-box {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 440px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-lg);
+    padding: 2.2rem;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  body.light-mode .auth-card-box {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(0, 180, 216, 0.3);
+  }
+
+  .auth-tab-nav {
+    display: flex;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-tab-btn {
+    flex: 1;
+    padding: 0.55rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    text-align: center;
+    transition: var(--transition-smooth);
+  }
+
+  .auth-tab-btn.active {
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .auth-tab-pane {
+    display: none;
+  }
+
+  .auth-tab-pane.active {
+    display: block;
+    animation: fadeInDown 0.25s ease;
+  }
+
+  .otp-inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .otp-box {
+    width: 100%;
+    height: 52px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--accent-cyan);
+    transition: var(--transition-smooth);
+  }
+
+  .otp-box:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    background: rgba(0, 240, 255, 0.05);
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-with-icon svg {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: var(--transition-smooth);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-hero-section">
+  <!-- Interactive 3D Canvas Background -->
+  <div id="three-hero-canvas"></div>
+
+  <!-- Left Hero Copy -->
+  <div class="auth-left-col">
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-size: 0.82rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 1.25rem;">
+      <span class="status-pulse-dot" style="background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></span>
+      Next-Gen AI Biometric Athletic Intelligence
+    </div>
+
+    <h1 style="font-size: 3.4rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.03em;">
+      Unleash Your <span style="background: linear-gradient(135deg, #00f0ff, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">True Athletic Leap.</span>
+    </h1>
+
+    <p style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem;">
+      FutureFit uses real-time 33-point MediaPipe pose estimation to track Left Ankle (#27) kinematics, certified vertical jump height, and explosive power for athletes and official talent scouts across Indian districts.
+    </p>
+
+    <!-- Biometric Key Highlights -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="color: var(--accent-cyan); font-weight: 800; font-size: 1.3rem;">33 Landmarks</div>
+        <div style="color: var(--text-muted); font-size: 0.82rem;">Real-time 60fps skeletal pose tracking with zero extra hardware.</div>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="color: var(--accent-lime); font-weight: 800; font-size: 1.3rem;">Landmark #27</div>
+        <div style="color: var(--text-muted); font-size: 0.82rem;">Left ankle vertical displacement & hang time physics calculus.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Floating Interactive Auth Card -->
+  <div class="auth-card-box">
+    <!-- Tab Navigation -->
+    <div class="auth-tab-nav">
+      <button class="auth-tab-btn active" data-target="tab-athlete-otp">Athlete OTP Login</button>
+      <button class="auth-tab-btn" data-target="tab-scout-login">Official Scout / Admin</button>
+    </div>
+
+    <!-- Tab 1: OTP Login Form -->
+    <div class="auth-tab-pane active" id="tab-athlete-otp">
+      <div style="margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700;">Sign in to FutureFit</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">Enter your phone number or email to receive a secure OTP code.</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="auth-identifier">Mobile Number or Email</label>
+          <div class="input-with-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            <input type="text" id="auth-identifier" class="input-field" placeholder="Enter 10-digit mobile or email..." required />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+          <button type="submit" class="btn btn-primary" id="send-otp-btn" style="flex: 2;">
+            <span>Send SMS OTP</span>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+          <button type="button" class="btn btn-secondary" id="biometric-login-btn" title="Sign in with Biometrics (Fingerprint / Face ID)" style="flex: 1; padding: 0.7rem 0.8rem;">
+            <svg width="18" height="18" fill="none" stroke="var(--accent-cyan)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004.07 9m5.918 8.04l.01.02"/></svg>
+            <span style="font-size: 0.82rem;">Biometrics</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Instant 1-Click Demo Logins -->
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.75rem; text-align: center;">
+          ⚡ Instant One-Click Demo Access
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <button type="button" class="btn btn-sm btn-secondary" id="quick-athlete-btn" style="width: 100%; justify-content: flex-start;">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" style="width: 22px; height: 22px; border-radius: 50%;" />
+            <span>Test Login as <strong>Verified Athlete</strong> (Dhule District)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Scout Login -->
+    <div class="auth-tab-pane" id="tab-scout-login">
+      <div style="margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700;">Government & Scout Portal</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">Authorized Sports Authority of India (SAI) & State Scout Access.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Scout Identification Badge</label>
+        <div class="input-with-icon">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <input type="text" class="input-field" value="SAI-WR-SCOUT-704" readonly />
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-lime" id="quick-scout-btn" style="width: 100%; margin-top: 0.5rem;">
+        <span>Enter Scout & Admin Portal</span>
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Functional OTP Verification Modal -->
+<div class="modal-backdrop" id="otp-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0, 240, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <h3 class="modal-title">Enter Verification Code</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('otp-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body" style="text-align: center;">
+      <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 0.5rem;">
+        We have dispatched a 6-digit one-time password to:
+      </p>
+      <div id="otp-recipient-display" style="font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 1.5rem;">
+        +91 98234 56789
+      </div>
+
+      <!-- 6-Digit OTP Boxes -->
+      <div class="otp-inputs-grid">
+        <input type="text" maxlength="1" class="otp-box" />
+        <input type="text" maxlength="1" class="otp-box" />
+        <input type="text" maxlength="1" class="otp-box" />
+        <input type="text" maxlength="1" class="otp-box" />
+        <input type="text" maxlength="1" class="otp-box" />
+        <input type="text" maxlength="1" class="otp-box" />
+      </div>
+
+      <!-- Demo Autofill Helper Button -->
+      <button type="button" class="btn btn-sm btn-outline-cyan" id="autofill-demo-otp-btn" style="margin-bottom: 1.25rem;">
+        ⚡ Auto-fill Demo Code (789456)
+      </button>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: center; align-items: center; gap: 0.75rem;">
+        <span id="otp-countdown">Resend available in 60s</span>
+        <span>•</span>
+        <button type="button" id="resend-otp-btn" disabled style="color: var(--accent-cyan); font-size: 0.85rem; cursor: pointer; text-decoration: underline;">
+          Resend OTP
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('otp-modal')">Cancel</button>
+      <button type="button" class="btn btn-primary" id="verify-otp-btn">
+        <span>Verify & Launch Platform</span>
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/three-scene.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Admin & Scout Portal - FutureFit{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 2rem;">
+  <!-- Admin Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+        <span class="badge badge-scout">Authorized Government Portal</span>
+        <span class="badge badge-cyan">SAI Western Division</span>
+      </div>
+      <h2 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem;">
+        <svg width="28" height="28" fill="none" stroke="var(--accent-amber)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Talent Scout & Biometric Verification Desk
+      </h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Review raw video verification recordings, certify AI candidate scores, and export national scouting registers.
+      </p>
+    </div>
+
+    <!-- Export Actions -->
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <button class="btn btn-secondary" id="export-csv-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Export CSV Report</span>
+      </button>
+
+      <button class="btn btn-primary" id="export-pdf-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <span>Generate PDF Audit Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Candidates Filter Bar with Futuristic "Coin Design" Aesthetic -->
+  <div class="coin-filter-card">
+    <div class="coin-filter-grid">
+      <!-- 1. District Filter (Location Coin) -->
+      <div class="coin-field-group">
+        <label class="coin-field-label" for="admin-filter-district">
+          <span>District Region</span>
+        </label>
+        <div class="coin-pill">
+          <div class="coin-medallion district" title="District Location Filter">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <select id="admin-filter-district" class="coin-select">
+            <option value="All">All Districts</option>
+            <option value="Dhule">Dhule</option>
+            <option value="Nashik">Nashik</option>
+            <option value="Pune">Pune</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Kolhapur">Kolhapur</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2. Verification Status (Shield Verification Coin) -->
+      <div class="coin-field-group">
+        <label class="coin-field-label" for="admin-filter-status">
+          <span>Verification Status</span>
+        </label>
+        <div class="coin-pill">
+          <div class="coin-medallion status" title="AI Verification Status Filter">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <select id="admin-filter-status" class="coin-select">
+            <option value="All">All Statuses</option>
+            <option value="Verified AI Candidate">Verified AI Candidate</option>
+            <option value="Pending Review">Pending Review</option>
+            <option value="Flagged for Review">Flagged for Review</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 3. Sport Discipline (Athletic Trophy Coin) -->
+      <div class="coin-field-group">
+        <label class="coin-field-label" for="admin-filter-sport">
+          <span>Sport Discipline</span>
+        </label>
+        <div class="coin-pill">
+          <div class="coin-medallion sport" title="Sport Discipline Filter">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <select id="admin-filter-sport" class="coin-select">
+            <option value="All">All Sports</option>
+            <option value="Athletics">Athletics</option>
+            <option value="Basketball">Basketball</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Kabaddi">Kabaddi</option>
+            <option value="Badminton">Badminton</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 4. Search Candidate (Search Lens Coin) -->
+      <div class="coin-field-group">
+        <label class="coin-field-label" for="admin-search-input">
+          <span>Search Candidate</span>
+        </label>
+        <div class="coin-pill">
+          <div class="coin-medallion search" title="Search Candidate Name or ID">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <input type="text" id="admin-search-input" class="coin-input" placeholder="Search candidate name or ID..." />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidates Table Card -->
+  <div class="glass-card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.15rem; font-weight: 700;">Candidate Assessment Verification Queue</h3>
+      <span class="badge badge-cyan" id="admin-total-screened">Loading...</span>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.2); font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">
+            <th style="padding: 1rem;">ID</th>
+            <th style="padding: 1rem;">Candidate Name</th>
+            <th style="padding: 1rem;">District / State</th>
+            <th style="padding: 1rem;">Recorded Jump & Telemetry</th>
+            <th style="padding: 1rem;">AI Confidence</th>
+            <th style="padding: 1rem;">Verification Status</th>
+            <th style="padding: 1rem; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-candidates-tbody">
+          <!-- Rendered dynamically by admin.js -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- District Scouting Drive Manager Section -->
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">District Scouting Drive Manager</h3>
+        <p style="font-size: 0.86rem; color: var(--text-secondary);">Manage active talent combines, trial quotas, and scout team assignments.</p>
+      </div>
+
+      <button class="btn btn-sm btn-outline-cyan" id="open-new-drive-modal-btn">
+        + Launch New District Drive
+      </button>
+    </div>
+
+    <div id="scouting-drives-container">
+      <!-- Injected dynamically by admin.js -->
+    </div>
+  </div>
+</div>
+
+<!-- Video Verification Review Modal -->
+<div class="modal-backdrop" id="verification-review-modal">
+  <div class="modal-container" style="max-width: 780px;">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-ai-verified">Biometric Review Audit</span>
+        <h3 class="modal-title">Candidate Jump Telemetry Review</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('verification-review-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+        <!-- Left: Raw Verification Video Feed -->
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">
+            Recorded Trial Video Feed
+          </div>
+          <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; background: #000; aspect-ratio: 4 / 3;">
+            <video id="rev-cand-video" controls style="width: 100%; height: 100%; object-fit: cover;"></video>
+          </div>
+        </div>
+
+        <!-- Right: Kinematic Telemetry Breakdown -->
+        <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+            Candidate Biometric Audit
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.25); padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.88rem;">
+            <div>Candidate: <strong id="rev-cand-name" style="color: var(--text-primary);">Candidate Selected</strong></div>
+            <div>Sport: <strong id="rev-cand-sport">--</strong></div>
+            <div>District: <strong id="rev-cand-district">--</strong></div>
+          </div>
+
+          <!-- Kinematic Stats Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); padding: 0.65rem; border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Verified Jump Height</div>
+              <div id="rev-cand-jump" style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-cyan);">68.5 cm</div>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 0.65rem; border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Ankle #27 Delta Y</div>
+              <div id="rev-cand-ankle-y" style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-lime);">Δ 0.412</div>
+            </div>
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.65rem; border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Hang Time</div>
+              <div id="rev-cand-hang-time" style="font-size: 1.2rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-amber);">747 ms</div>
+            </div>
+            <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.65rem; border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Takeoff Velocity</div>
+              <div id="rev-cand-velocity" style="font-size: 1.2rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-purple);">3.66 m/s</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem;">
+            <span>AI Landmark Integrity Score:</span>
+            <strong id="rev-cand-score" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 1.1rem;">98.4%</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scout Evaluation Notes Input -->
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="rev-notes-input">Official Scout Assessment Remarks</label>
+        <textarea id="rev-notes-input" class="input-field" rows="2" style="padding-left: 1rem; resize: vertical;" placeholder="Enter biometric feedback or trial notes..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="justify-content: space-between;">
+      <div>
+        <button type="button" class="btn btn-danger btn-sm" id="rev-reject-btn">✕ Reject</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="rev-retest-btn">⚠ Flag for Re-Test</button>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('verification-review-modal')">Close</button>
+        <button type="button" class="btn btn-lime" id="rev-approve-btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>Approve AI Verification</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Launch New District Drive Modal -->
+<div class="modal-backdrop" id="new-drive-modal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="badge badge-scout">Scouting Administration</span>
+        <h3 class="modal-title">Launch District Scouting Drive</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('new-drive-modal')">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="drive-title-input">Drive Title</label>
+        <input type="text" id="drive-title-input" class="input-field" placeholder="e.g. Nashik Rural High-Performance Talent Drive" style="padding-left: 1rem;" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="drive-districts-input">Target Districts (comma separated)</label>
+        <input type="text" id="drive-districts-input" class="input-field" value="Dhule, Nandurbar, Jalgaon" style="padding-left: 1rem;" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="drive-quota-input">Candidate Screening Quota</label>
+        <input type="number" id="drive-quota-input" class="input-field" value="300" style="padding-left: 1rem;" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="drive-scout-input">Lead Scout / Directorate In-Charge</label>
+        <input type="text" id="drive-scout-input" class="input-field" value="Dr. Pradeep Jadhav (SAI Western Cell)" style="padding-left: 1rem;" />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('new-drive-modal')">Cancel</button>
+      <button type="button" class="btn btn-primary" id="create-drive-btn">
+        <span>Launch Drive</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
